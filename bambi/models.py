@@ -759,6 +759,31 @@ class Model:
 
         return axes
 
+    def sample_prior_predictive(self, samples=500, var_names=None):
+        """Generate samples from the prior predictive distribution.
+
+        Parameters
+        ----------
+        samples : int
+            Optional, the number of samples to draw for each variable Defaults to 500.
+        var_names : list of string
+            Optional, the variable names for which to generate samples. Defaults to None, which
+            generates samples for all variables.
+
+
+        Returns
+        -------
+        dict
+            Dictionary whose keys are the model's variable names, and values are arrays of prior
+            samples. { str -> np.array }
+        """
+        if not self.built:
+            raise ValueError("Cannot sample from the prior distribution until the model is built!")
+
+        with pm.Model():
+            return pm.sample_prior_predictive(samples=samples, var_names=var_names)
+
+
     @property
     def term_names(self):
         """Return names of all terms in order of addition to model."""
