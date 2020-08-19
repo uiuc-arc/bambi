@@ -35,6 +35,13 @@ def crossed_data():
     data = pd.read_csv(join(data_dir, "crossed_random.csv"))
     return data
 
+def dicts_close(a, b):
+    if set(a) != set(b):
+        assert False
+    else:
+        for x in a.keys():
+            np.testing.assert_allclose(a[x], b[x], atol=0, rtol=0.01)
+
 
 def test_empty_model(crossed_data):
     model0 = Model(crossed_data)
@@ -261,13 +268,15 @@ def test_many_fixed_many_random(crossed_data):
     # check dictionary keys
     assert set(priors0) == set(priors1)
     # check dictionary values
-    def dicts_close(a, b):
-        if set(a) != set(b):
-            return False
-        else:
-            return [np.allclose(a[x], b[x], atol=0, rtol=0.01) for x in a.keys()]
+    # def dicts_close(a, b):
+    #     if set(a) != set(b):
+    #         return False
+    #     else:
+    #         return [np.allclose(a[x], b[x], atol=0, rtol=0.01) for x in a.keys()]
 
-    assert all([dicts_close(priors0[x], priors1[x]) for x in priors0.keys()])
+    for x in priors0.keys():
+        dicts_close(priors0[x], priors1[x])
+    #assert all([dicts_close(priors0[x], priors1[x]) for x in priors0.keys()])
 
     # check that fit and add models have same priors for random effects
     priors0 = {x.name: x.prior.args["sigma"].args for x in model0.terms.values() if x.random}
@@ -275,13 +284,14 @@ def test_many_fixed_many_random(crossed_data):
     # check dictionary keys
     assert set(priors0) == set(priors1)
     # check dictionary values
-    def dicts_close(a, b):
-        if set(a) != set(b):
-            return False
-        else:
-            return [np.allclose(a[x], b[x], atol=0, rtol=0.01) for x in a.keys()]
-
-    assert all([dicts_close(priors0[x], priors1[x]) for x in priors0.keys()])
+    # def dicts_close(a, b):
+    #     if set(a) != set(b):
+    #         return False
+    #     else:
+    #         return [np.allclose(a[x], b[x], atol=0, rtol=0.01) for x in a.keys()]
+    for x in priors0.keys():
+        dicts_close(priors0[x], priors1[x])
+    #assert all([dicts_close(priors0[x], priors1[x]) for x in priors0.keys()])
 
 
 def test_cell_means_with_many_random_effects(crossed_data):
@@ -366,7 +376,7 @@ def test_logistic_regression(crossed_data):
         link="logit",
         backend="pymc3",
         tune=0,
-        samples=1000,
+        samples=1000, chains=4
     )
     # model0.build()
     # fitted0 = model0.fit()
@@ -387,11 +397,12 @@ def test_logistic_regression(crossed_data):
         link=tt.nnet.sigmoid,
         backend="pymc3",
         tune=0,
-        samples=1000,
+        samples=1000, chains=4
     )
 
     # check that using a theano link function works
-    assert np.allclose(az.summary(fitted0)["mean"], az.summary(fitted3)["mean"], atol=0.2)
+    #assert np.allclose(az.summary(fitted0)["mean"], az.summary(fitted3)["mean"], atol=0.2)
+    np.testing.assert_allclose(az.summary(fitted0)["mean"], az.summary(fitted3)["mean"], atol=0.2, rtol=0)    
 
     # check that term names agree
     assert set(model0.term_names) == set(model1.term_names)
@@ -413,13 +424,15 @@ def test_logistic_regression(crossed_data):
     # check dictionary keys
     assert set(priors0) == set(priors1)
     # check dictionary values
-    def dicts_close(a, b):
-        if set(a) != set(b):
-            return False
-        else:
-            return [np.allclose(a[x], b[x], atol=0, rtol=0.01) for x in a.keys()]
+    # def dicts_close(a, b):
+    #     if set(a) != set(b):
+    #         return False
+    #     else:
+    #         return [np.allclose(a[x], b[x], atol=0, rtol=0.01) for x in a.keys()]
 
-    assert all([dicts_close(priors0[x], priors1[x]) for x in priors0.keys()])
+    #assert all([dicts_close(priors0[x], priors1[x]) for x in priors0.keys()])
+    for x in priors0.keys():
+        dicts_close(priors0[x], priors1[x])
 
 
 def test_poisson_regression(crossed_data):
@@ -466,13 +479,15 @@ def test_poisson_regression(crossed_data):
     # check dictionary keys
     assert set(priors0) == set(priors1)
     # check dictionary values
-    def dicts_close(a, b):
-        if set(a) != set(b):
-            return False
-        else:
-            return [np.allclose(a[x], b[x], atol=0, rtol=0.01) for x in a.keys()]
+    # def dicts_close(a, b):
+    #     if set(a) != set(b):
+    #         return False
+    #     else:
+    #         return [np.allclose(a[x], b[x], atol=0, rtol=0.01) for x in a.keys()]
 
-    assert all([dicts_close(priors0[x], priors1[x]) for x in priors0.keys()])
+    for x in priors0.keys():
+        dicts_close(priors0[x], priors1[x]) 
+    #assert all([dicts_close(priors0[x], priors1[x]) for x in priors0.keys()])
 
 
 def test_laplace():
