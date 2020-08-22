@@ -205,8 +205,8 @@ def test_many_fixed_many_random(crossed_data):
         backend="pymc3",
         init=None,
         tune=10,
-        samples=10,
-        chains=2,
+        samples=1,
+        chains=1,
     )
     # model0.build(backend='pymc3')
     # model0.fit(tune=0, samples=1)
@@ -376,7 +376,7 @@ def test_logistic_regression(crossed_data):
         link="logit",
         backend="pymc3",
         tune=0,
-        samples=1000, chains=4
+        samples=330, chains=1
     )
     # model0.build()
     # fitted0 = model0.fit()
@@ -397,7 +397,7 @@ def test_logistic_regression(crossed_data):
         link=tt.nnet.sigmoid,
         backend="pymc3",
         tune=0,
-        samples=1000, chains=4
+        samples=220, chains=3
     )
 
     # check that using a theano link function works
